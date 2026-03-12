@@ -1,0 +1,32 @@
+# dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# build output
+client/dist/
+dist/
+
+# environment
+.env
+.env.*
+!.env.example
+server/.env
+server/.env.*
+!server/.env.example
+client/.env
+client/.env.*
+!client/.env.example
+
+# logs
+*.log
+logs/
+
+# editors / OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# vercel
+.vercel/
