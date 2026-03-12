@@ -40,7 +40,7 @@ export default function UserLogin() {
                     <p className="text-sm text-slate-600 mt-1">Sign in to your account</p>
                 </div>
 
-                <div className="auth-card p-8">
+                <div className="auth-card p-5 sm:p-8">
                     <form onSubmit={onSubmit} className="space-y-4">
                         <div>
                             <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5 mb-1.5"><User size={14} /> Email</label>
@@ -51,7 +51,7 @@ export default function UserLogin() {
                             <input type="password" required className="input" value={password} onChange={e => setPassword(e.target.value)} />
                         </div>
 
-                        {err && <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700">{err}</div>}
+                        {err && <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700 break-words">{err}</div>}
 
                         <button disabled={loading} className="btn btn-primary w-full py-2.5">
                             {loading ? "Signing in..." : "Sign In"} <ArrowRight size={16} />
@@ -62,7 +62,7 @@ export default function UserLogin() {
                         </Link>
                     </form>
 
-                    <div className="mt-6 text-center text-sm text-slate-600">
+                    <div className="mt-6 text-center text-xs sm:text-sm text-slate-600">
                         Please contact the administrator to create an account.
                     </div>
                 </div>

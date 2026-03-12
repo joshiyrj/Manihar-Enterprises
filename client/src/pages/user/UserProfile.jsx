@@ -85,12 +85,12 @@ export default function UserProfile() {
                 <p className="page-subtitle">Manage your personal information and password.</p>
             </div>
 
-            <div className="card p-6">
+            <div className="card p-4 sm:p-6">
                 <h2 className="text-base font-semibold text-slate-900 border-b pb-3 mb-4 flex items-center gap-2">
                     <User size={18} className="text-[#1e3c72]" /> Personal details
                 </h2>
 
-                <form onSubmit={onSaveProfile} className="space-y-4 max-w-md">
+                <form onSubmit={onSaveProfile} className="space-y-4 max-w-md w-full">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1 flex items-center gap-1"><User size={14} /> Full Name</label>
                         <input className="input" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
@@ -121,8 +121,8 @@ export default function UserProfile() {
                 </form>
             </div>
 
-            <div className="card p-6">
-                <div className="border-b pb-3 mb-4 flex items-center justify-between">
+            <div className="card p-4 sm:p-6">
+                <div className="border-b pb-3 mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2">
                         <Lock size={18} className="text-[#1e3c72]" /> Password & Security
                     </h2>
@@ -133,7 +133,7 @@ export default function UserProfile() {
                     )}
                 </div>
 
-                <form onSubmit={onChangePassword} className="space-y-4 max-w-md">
+                <form onSubmit={onChangePassword} className="space-y-4 max-w-md w-full">
                     {cooldownTime > 0 ? (
                         <div className="p-4 rounded-xl bg-orange-50 border border-orange-200 text-sm text-orange-800 flex gap-3">
                             <AlertCircle size={20} className="shrink-0 text-orange-600 mt-0.5" />

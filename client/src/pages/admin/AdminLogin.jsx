@@ -40,7 +40,7 @@ export default function AdminLogin() {
           <p className="text-sm text-slate-600 mt-1">Sign in to continue</p>
         </div>
 
-        <div className="auth-card p-8">
+        <div className="auth-card p-5 sm:p-8">
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
               <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5 mb-1.5">
@@ -68,7 +68,7 @@ export default function AdminLogin() {
               />
             </div>
 
-            {err && <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700">{err}</div>}
+            {err && <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700 break-words">{err}</div>}
 
             <button disabled={loading} className="btn btn-primary w-full py-2.5">
               {loading ? "Signing in..." : "Sign In"}
@@ -79,8 +79,6 @@ export default function AdminLogin() {
               Switch to User Login
             </Link>
           </form>
-
-          <div className="mt-5 text-xs text-slate-500 text-center">Use your configured admin credentials</div>
         </div>
       </div>
     </div>

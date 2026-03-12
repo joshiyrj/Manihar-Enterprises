@@ -427,23 +427,23 @@ body {
   }
 
   .modal-header {
-    @apply px-6 py-4 border-b flex items-center justify-between;
+    @apply px-4 py-4 sm:px-6 border-b flex items-center justify-between;
     border-color: var(--line);
   }
 
   .modal-body {
-    @apply px-6 py-5;
+    @apply px-4 py-5 sm:px-6;
   }
 
   .modal-footer {
-    @apply px-6 py-4 border-t flex justify-end gap-2;
+    @apply px-4 py-4 sm:px-6 border-t flex justify-end gap-2;
     border-color: var(--line);
     background: var(--surface-soft);
   }
 
   /* ── Toast Notifications ── */
   .toast-container {
-    @apply fixed top-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none;
+    @apply fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none;
   }
 
   .toast {
@@ -798,5 +798,24 @@ body {
   .admin-theme .border-violet-200,
   .admin-theme .border-purple-200 {
     border-color: color-mix(in srgb, #7c3aed 24%, transparent);
+  }
+}
+
+@media (max-width: 768px) {
+  .table-wrap table {
+    min-width: 640px;
+  }
+}
+
+@media (max-width: 640px) {
+  .toast-container {
+    left: 12px;
+    right: 12px;
+    top: 12px;
+  }
+
+  .toast {
+    max-width: none;
+    width: 100%;
   }
 }

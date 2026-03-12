@@ -98,8 +98,7 @@ export default function AdminExport() {
                 {exports.map((exp) => (
                     <div
                         key={exp.filename}
-                        className="card card-pad flex flex-col justify-between transition-transform hover:scale-[1.02] cursor-pointer"
-                        onClick={() => downloadExport(exp.endpoint, exp.filename)}
+                        className="card card-pad flex flex-col justify-between transition-transform md:hover:scale-[1.02]"
                     >
                         <div>
                             <div className="flex items-center gap-3 mb-3">
@@ -109,21 +108,22 @@ export default function AdminExport() {
                                 >
                                     {exp.icon}
                                 </div>
-                                <div>
-                                    <div className="font-semibold text-slate-900 text-sm">{exp.title}</div>
-                                    <div className="flex items-center gap-1 text-xs text-slate-500">
+                                <div className="min-w-0">
+                                    <div className="font-semibold text-slate-900 text-sm break-words">{exp.title}</div>
+                                    <div className="flex items-center gap-1 text-xs text-slate-500 break-all">
                                         {exp.fileIcon}
                                         {exp.filename}
                                     </div>
                                 </div>
                             </div>
-                            <p className="text-sm text-slate-600">{exp.description}</p>
+                            <p className="text-sm text-slate-600 break-words">{exp.description}</p>
                         </div>
 
                         <div className="mt-4">
                             <button
                                 className="btn btn-ghost w-full"
                                 disabled={downloading === exp.filename}
+                                onClick={() => downloadExport(exp.endpoint, exp.filename)}
                             >
                                 <Download size={16} />
                                 {downloading === exp.filename ? "Downloading..." : "Download"}

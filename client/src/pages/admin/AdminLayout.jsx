@@ -27,7 +27,7 @@ export default function AdminLayout() {
   if (isLoading) {
     return (
       <div className="admin-theme min-h-screen grid place-items-center">
-        <div className="card p-6 w-[360px]">
+        <div className="card p-6 w-full max-w-md mx-4">
           <div className="skeleton h-5 w-36" />
           <div className="skeleton mt-3 h-4 w-64" />
           <div className="skeleton mt-6 h-10 w-full rounded-xl" />

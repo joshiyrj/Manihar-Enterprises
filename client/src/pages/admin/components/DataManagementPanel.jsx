@@ -27,6 +27,23 @@ function buildTemplateCsv(csvTemplate) {
         .join("\n");
 }
 
+function toSingularLabel(text) {
+    const label = String(text || "").trim();
+    if (/ies$/i.test(label)) return label.replace(/ies$/i, "y");
+    if (/s$/i.test(label)) return label.replace(/s$/i, "");
+    return label;
+}
+
+function formatColumnValue(col, item) {
+    const raw = item?.[col.key];
+    if (raw === null || raw === undefined || raw === "") return "-";
+    if (col.type === "number") {
+        const parsed = Number(raw);
+        return Number.isFinite(parsed) ? parsed.toLocaleString() : String(raw);
+    }
+    return String(raw);
+}
+
 /**
  * Unified CRUD management panel for ALL modules.
  *
@@ -57,6 +74,7 @@ export default function DataManagementPanel({
     const [limit] = useState(10);
     const [statusFilter, setStatusFilter] = useState("all");
     const [selected, setSelected] = useState(new Set());
+    const singularTitle = toSingularLabel(title);
 
     // Modal state
     const [showModal, setShowModal] = useState(false);
@@ -111,6 +129,7 @@ export default function DataManagementPanel({
     const items = data?.items || [];
     const total = data?.total || 0;
     const totalPages = data?.totalPages || 1;
+    const emptyColSpan = columns.length + (showCollectionColumn ? 4 : 3);
     const selectedItems = items.filter((item) => selected.has(item._id));
     const hasSelectedActive = selectedItems.some((item) => item.status === "active");
     const hasSelectedInactive = selectedItems.some((item) => item.status === "inactive");
@@ -125,7 +144,7 @@ export default function DataManagementPanel({
                 qc.invalidateQueries({ queryKey: ["collections"] });
             }
             closeModal();
-            addToast(`${title.replace(/s$/, "")} created successfully`);
+            addToast(`${singularTitle} created successfully`);
         },
         onError: (e) => {
             const msg = e?.response?.data?.message || "Failed to create";
@@ -142,7 +161,7 @@ export default function DataManagementPanel({
                 qc.invalidateQueries({ queryKey: ["collections"] });
             }
             closeModal();
-            addToast(`${title.replace(/s$/, "")} updated successfully`);
+            addToast(`${singularTitle} updated successfully`);
         },
         onError: (e) => {
             const msg = e?.response?.data?.message || "Failed to update";
@@ -409,12 +428,12 @@ export default function DataManagementPanel({
             )}
 
             {/* Header */}
-            <div className="flex items-center justify-between mb-5">
+            <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
                     <h1 className="page-title flex items-center gap-2">{icon} {title}</h1>
                     <p className="page-subtitle">{subtitle}</p>
                 </div>
-                <div className="flex items-center gap-2 flex-wrap justify-end">
+                <div className="flex w-full flex-wrap items-stretch gap-2 md:w-auto md:justify-end">
                     {csvTemplate?.headers?.length > 0 && (
                         <>
                             <input
@@ -424,24 +443,24 @@ export default function DataManagementPanel({
                                 className="hidden"
                                 onChange={handleCsvImport}
                             />
-                            <button onClick={downloadExampleCsv} className="btn btn-ghost">
+                            <button onClick={downloadExampleCsv} className="btn btn-ghost w-full sm:w-auto">
                                 <Download size={16} /> Example CSV
                             </button>
-                            <button onClick={openImportDialog} className="btn btn-ghost" disabled={isImportingCsv}>
+                            <button onClick={openImportDialog} className="btn btn-ghost w-full sm:w-auto" disabled={isImportingCsv}>
                                 {isImportingCsv ? <FileSpreadsheet size={16} /> : <Upload size={16} />}
                                 {isImportingCsv ? "Importing..." : "Import CSV"}
                             </button>
                         </>
                     )}
-                    <button onClick={openCreate} className="btn btn-primary">
-                        <Plus size={16} /> Add {title.replace(/s$/, "")}
+                    <button onClick={openCreate} className="btn btn-primary w-full sm:w-auto">
+                        <Plus size={16} /> Add {singularTitle}
                     </button>
                 </div>
             </div>
 
             {/* Search + Filters */}
-            <div className="flex gap-3 mb-4 flex-wrap">
-                <div className="relative flex-1 min-w-[200px]">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="relative flex-1 min-w-0">
                     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
                         className="input pl-9"
@@ -451,7 +470,7 @@ export default function DataManagementPanel({
                     />
                 </div>
                 <select
-                    className="select w-auto"
+                    className="select w-full sm:w-auto"
                     value={statusFilter}
                     onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
                 >
@@ -463,31 +482,128 @@ export default function DataManagementPanel({
 
             {/* Bulk Actions */}
             {selected.size > 0 && (
-                <div className="bulk-banner"
+                <div className="bulk-banner flex-wrap"
                     style={{ animation: "slideUp 0.2s ease-out" }}>
                     <span className="bulk-banner-count">{selected.size} selected</span>
-                    <div className="flex-1" />
+                    <div className="hidden sm:block flex-1" />
                     {hasSelectedInactive && (
-                        <button onClick={() => bulkStatusMut.mutate({ ids: [...selected], status: "active" })} className="btn btn-sm bulk-btn-success rounded-lg">
+                        <button onClick={() => bulkStatusMut.mutate({ ids: [...selected], status: "active" })} className="btn btn-sm bulk-btn-success rounded-lg w-full sm:w-auto">
                             <ToggleRight size={14} /> Activate
                         </button>
                     )}
                     {hasSelectedActive && (
-                        <button onClick={() => bulkStatusMut.mutate({ ids: [...selected], status: "inactive" })} className="btn btn-sm bulk-btn-muted rounded-lg">
+                        <button onClick={() => bulkStatusMut.mutate({ ids: [...selected], status: "inactive" })} className="btn btn-sm bulk-btn-muted rounded-lg w-full sm:w-auto">
                             <ToggleLeft size={14} /> Deactivate
                         </button>
                     )}
-                    <button onClick={handleBulkDelete} className="btn btn-sm bulk-btn-danger rounded-lg">
+                    <button onClick={handleBulkDelete} className="btn btn-sm bulk-btn-danger rounded-lg w-full sm:w-auto">
                         <Trash2 size={14} /> Delete
                     </button>
-                    <button onClick={() => setSelected(new Set())} className="btn btn-sm text-slate-500">
+                    <button onClick={() => setSelected(new Set())} className="btn btn-sm text-slate-500 w-full sm:w-auto">
                         <X size={14} />
                     </button>
                 </div>
             )}
 
-            {/* Table */}
-            <div className="table-wrap">
+            {/* Mobile Cards */}
+            <div className="md:hidden space-y-3">
+                <div className="card px-4 py-3 flex items-center justify-between gap-3">
+                    <label className="inline-flex items-center gap-2 text-sm font-medium text-slate-700">
+                        <input
+                            type="checkbox"
+                            checked={items.length > 0 && selected.size === items.length}
+                            onChange={toggleAll}
+                        />
+                        Select all
+                    </label>
+                    <span className="text-xs text-slate-500">{items.length} shown</span>
+                </div>
+
+                {isLoading ? (
+                    Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="card p-4 space-y-3">
+                            <div className="skeleton h-5 w-32 rounded" />
+                            <div className="skeleton h-4 w-full rounded" />
+                            <div className="skeleton h-4 w-3/4 rounded" />
+                            <div className="skeleton h-9 w-full rounded-xl" />
+                        </div>
+                    ))
+                ) : items.length === 0 ? (
+                    <div className="card p-6 text-center">
+                        <PackageOpen size={36} className="mx-auto opacity-40" />
+                        <p className="mt-2 font-medium text-slate-500">No {title.toLowerCase()} found</p>
+                        <p className="text-xs mt-1 text-slate-500">Click "Add {singularTitle}" to create one.</p>
+                    </div>
+                ) : (
+                    items.map(item => (
+                        <article key={item._id} className="card p-4 space-y-3">
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0 flex items-start gap-2">
+                                    <input
+                                        type="checkbox"
+                                        className="mt-1"
+                                        checked={selected.has(item._id)}
+                                        onChange={() => toggleSelect(item._id)}
+                                    />
+                                    <div className="min-w-0">
+                                        <p className="text-[11px] uppercase tracking-wide text-slate-500">
+                                            {columns.find(c => c.key === identifierField)?.label || "Name"}
+                                        </p>
+                                        <p className="font-semibold text-slate-900 break-words">{item[identifierField] || "-"}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    className="status-toggle"
+                                    onClick={() => handleToggleStatus(item)}
+                                    title={`Click to ${item.status === "active" ? "deactivate" : "activate"}`}
+                                    disabled={toggleStatusMut.isPending}
+                                >
+                                    <span className={`badge ${item.status === "active" ? "badge-active" : "badge-inactive"}`}>
+                                        {item.status === "active" ? "Active" : "Inactive"}
+                                    </span>
+                                </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-2">
+                                {columns.filter(col => col.key !== identifierField).map(col => (
+                                    <div key={col.key} className="rounded-lg panel-muted-box border px-3 py-2">
+                                        <p className="text-[11px] uppercase tracking-wide text-slate-500">{col.label}</p>
+                                        <p className="text-sm text-slate-800 break-words">{formatColumnValue(col, item)}</p>
+                                    </div>
+                                ))}
+                                {showCollectionColumn && (
+                                    <div className="rounded-lg panel-muted-box border px-3 py-2">
+                                        <p className="text-[11px] uppercase tracking-wide text-slate-500">Collection</p>
+                                        <p className="text-sm text-slate-800 break-words">{item.collectionName || "Unassigned"}</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2 pt-1">
+                                <button
+                                    onClick={() => openEdit(item)}
+                                    className="btn btn-ghost w-full"
+                                    title="Edit"
+                                >
+                                    <Edit3 size={15} />
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(item)}
+                                    className="btn btn-danger w-full"
+                                    title="Delete"
+                                >
+                                    <Trash2 size={15} />
+                                    Delete
+                                </button>
+                            </div>
+                        </article>
+                    ))
+                )}
+            </div>
+
+            {/* Desktop Table */}
+            <div className="hidden md:block table-wrap -mx-1 sm:mx-0">
                 <table>
                     <thead>
                         <tr>
@@ -527,10 +643,10 @@ export default function DataManagementPanel({
                             ))
                         ) : items.length === 0 ? (
                             <tr>
-                                <td colSpan={columns.length + (showCollectionColumn ? 4 : 3)} className="empty-state">
+                                <td colSpan={emptyColSpan} className="empty-state">
                                     <PackageOpen size={40} />
                                     <p className="font-medium text-slate-500">No {title.toLowerCase()} found</p>
-                                    <p className="text-xs mt-1">Click "Add {title.replace(/s$/, "")}" to create one.</p>
+                                    <p className="text-xs mt-1">Click "Add {singularTitle}" to create one.</p>
                                 </td>
                             </tr>
                         ) : items.map(item => (
@@ -541,7 +657,7 @@ export default function DataManagementPanel({
                                 {columns.map(col => (
                                     <td key={col.key}>
                                         <span className={`table-cell-text ${col.key === identifierField ? "font-medium text-slate-900" : ""}`}>
-                                            {col.type === "number" ? Number(item[col.key]).toLocaleString() : (item[col.key] || "-")}
+                                            {formatColumnValue(col, item)}
                                         </span>
                                     </td>
                                 ))}
@@ -584,11 +700,14 @@ export default function DataManagementPanel({
 
             {/* Pagination */}
             {!useEntityApi && totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
+                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="text-sm text-slate-500">
                         Showing {items.length} of {total} entries
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="text-xs text-slate-500 sm:hidden">
+                        Page {page} of {totalPages}
+                    </div>
+                    <div className="flex items-center gap-1 flex-wrap">
                         <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="btn btn-ghost text-xs py-1 px-2">
                             <ChevronLeft size={14} /> Prev
                         </button>
@@ -598,7 +717,7 @@ export default function DataManagementPanel({
                             if (p > totalPages) return null;
                             return (
                                 <button key={p} onClick={() => setPage(p)}
-                                    className={`btn text-xs py-1 px-3 ${p === page ? "btn-primary" : "btn-ghost"}`}
+                                    className={`hidden sm:inline-flex btn text-xs py-1 px-3 ${p === page ? "btn-primary" : "btn-ghost"}`}
                                 >{p}</button>
                             );
                         })}
@@ -619,11 +738,11 @@ export default function DataManagementPanel({
             {/* Create / Edit Modal */}
             {showModal && (
                 <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && closeModal()}>
-                    <div className="modal">
+                    <div className="modal max-h-[92vh] flex flex-col">
                         <div className="modal-header">
                             <div>
                                 <h3 className="font-semibold text-slate-900">
-                                    {modalMode === "create" ? "Create" : "Edit"} {title.replace(/s$/, "")}
+                                    {modalMode === "create" ? "Create" : "Edit"} {singularTitle}
                                 </h3>
                                 <p className="text-xs text-slate-500 mt-0.5">
                                     {modalMode === "create" ? "Fill in the details below." : "Update the details and save."}
@@ -633,7 +752,7 @@ export default function DataManagementPanel({
                                 <X size={18} />
                             </button>
                         </div>
-                        <div className="modal-body space-y-4">
+                        <div className="modal-body space-y-4 overflow-y-auto">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {editableFields.filter(c => c.editable !== false).map(col => (
                                     <div key={col.key} className={col.fullWidth ? "md:col-span-2" : ""}>
@@ -704,12 +823,12 @@ export default function DataManagementPanel({
                                 </div>
                             )}
                         </div>
-                        <div className="modal-footer">
-                            <button onClick={closeModal} className="btn btn-ghost">Cancel</button>
+                        <div className="modal-footer flex-col-reverse sm:flex-row">
+                            <button onClick={closeModal} className="btn btn-ghost w-full sm:w-auto">Cancel</button>
                             <button
                                 onClick={handleSave}
                                 disabled={createMut.isPending || updateMut.isPending}
-                                className="btn btn-primary"
+                                className="btn btn-primary w-full sm:w-auto"
                             >
                                 {(createMut.isPending || updateMut.isPending) ? (
                                     <>Saving...</>

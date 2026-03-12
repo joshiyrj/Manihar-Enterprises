@@ -13,7 +13,7 @@ export default function ProfilePanel() {
 
   const [pw, setPw] = useState({ currentPassword: "", newPassword: "" });
 
-  if (isLoading) return <div className="text-slate-500">Loading...</div>;
+  if (isLoading) return <div className="card p-4 text-slate-500 text-sm">Loading...</div>;
 
   const current = form || data;
 
@@ -77,18 +77,18 @@ export default function ProfilePanel() {
           <Field label="Mobile" value={current.mobile} onChange={(v) => setForm({ ...(current), mobile: v })} />
           <div className="panel-muted-box rounded-xl border px-3 py-2">
             <div className="text-xs text-slate-500">Username</div>
-            <div className="mt-1 font-medium text-slate-900">{data.username}</div>
+            <div className="mt-1 font-medium text-slate-900 break-words">{data.username}</div>
           </div>
         </div>
 
-        <div className="mt-4 flex items-center gap-3">
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
           <button
             onClick={saveProfile}
-            className="btn btn-primary"
+            className="btn btn-primary w-full sm:w-auto"
           >
             Save Profile
           </button>
-          {msg && <span className="inline-success text-sm">{msg}</span>}
+          {msg && <span className="inline-success text-sm break-words">{msg}</span>}
         </div>
       </section>
 
@@ -111,14 +111,14 @@ export default function ProfilePanel() {
           />
         </div>
 
-        <div className="mt-4 flex items-center gap-3">
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
           <button
             onClick={changePassword}
-            className="btn btn-ghost"
+            className="btn btn-ghost w-full sm:w-auto"
           >
             Update Password
           </button>
-          {pwMsg && <span className="inline-danger text-sm">{pwMsg}</span>}
+          {pwMsg && <span className="inline-danger text-sm break-words">{pwMsg}</span>}
         </div>
 
       </section>

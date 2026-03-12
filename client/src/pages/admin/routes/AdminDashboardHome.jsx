@@ -95,18 +95,18 @@ export default function AdminDashboardHome() {
           </div>
           <div className="divide-y divide-slate-100">
             {data.recentActivity.map((act, i) => (
-              <div key={i} className="px-5 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${actionBadge(act.action)}`}>
+              <div key={i} className="px-5 py-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-3 min-w-0">
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium shrink-0 ${actionBadge(act.action)}`}>
                     {act.action}
                   </span>
-                  <span className="text-sm text-slate-700">
+                  <span className="text-sm text-slate-700 break-words">
                     {act.entityType && <span className="font-medium">{act.entityType}</span>}
                     {act.entityName && `: ${act.entityName}`}
                     {!act.entityType && !act.entityName && (act.details?.userMessage || "System action")}
                   </span>
                 </div>
-                <span className="text-xs text-slate-400">{formatTimeAgo(act.createdAt)}</span>
+                <span className="text-xs text-slate-400 sm:whitespace-nowrap">{formatTimeAgo(act.createdAt)}</span>
               </div>
             ))}
           </div>
