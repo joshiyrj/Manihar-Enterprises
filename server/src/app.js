@@ -15,6 +15,13 @@ const quantityRoutes = require("./routes/quantities.routes");
 const designNoRoutes = require("./routes/designNos.routes");
 const userRoutes = require("./routes/users.routes");
 
+function normalizeOrigin(value) {
+  const raw = String(value || "").trim().replace(/\/+$/, "");
+  if (!raw) return "";
+  if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+  return `https://${raw}`;
+}
+
 function createApp() {
   const app = express();
 
@@ -23,19 +30,26 @@ function createApp() {
 
   const configuredOrigins = (process.env.CLIENT_ORIGIN || "")
     .split(",")
-    .map((o) => o.trim())
+    .map(normalizeOrigin)
     .filter(Boolean);
+  const vercelOrigins = [
+    normalizeOrigin(process.env.VERCEL_URL),
+    normalizeOrigin(process.env.VERCEL_PROJECT_PRODUCTION_URL)
+  ].filter(Boolean);
   const allowedOrigins = new Set([
     "http://localhost:3000",
     "http://localhost:5173",
-    ...configuredOrigins
+    ...configuredOrigins,
+    ...vercelOrigins
   ]);
 
   app.use(
     cors({
       origin(origin, cb) {
-        if (!origin || allowedOrigins.has(origin)) return cb(null, true);
-        return cb(new Error(`CORS blocked for origin: ${origin}`));
+        if (!origin) return cb(null, true);
+        const normalizedOrigin = normalizeOrigin(origin);
+        if (allowedOrigins.has(normalizedOrigin)) return cb(null, true);
+        return cb(new Error(`CORS blocked for origin: ${normalizedOrigin}`));
       },
       credentials: true
     })
